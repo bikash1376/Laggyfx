@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Canvas API</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@5"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=DM+Serif+Display:ital@0;1&family=Instrument+Serif:ital@0;1&family=Ms+Madi&family=Onest:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>  -->
+     
+    <style>
+      body {
+        background-color: #1a1a1a;
+        color: #ffffff;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+      }
+      canvas {
+        border: 1px solid #333;
+        margin: 0 auto;
+        display: block;
+        height: 90vh;
+        width: 70vw;
+        background-color: #2a2a2a;
+        position: relative;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+        overflow: hidden;
+        box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5);
+        border-radius: 10px;
+        padding: 10px;
+        margin: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      .container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+      }
+      .controls {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px;
+        background: #2a2a2a;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        width: 300px;
+      }
+      .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 10px;
+        background: #333;
+        border-radius: 6px;
+      }
+      .control-group h3 {
+        margin: 0 0 10px 0;
+        font-size: 16px;
+        color: #fff;
+      }
+      input[type="text"],
+      input[type="number"],
+      input[type="color"],
+      select,
+      button {
+        background-color: #1f1f1f;
+        color: #ffffff;
+        border: 1px solid #444;
+        border-radius: 4px;
+        padding: 20px;
+        font-size: 14px;
+      }
+      select,
+select option {
+  color: #ffffff; 
+}
+
+      input[type="color"] {
+        padding: 0;
+        border: none;
+        background: none;
+      }
+
+      input:focus,
+      select:focus {
+        outline: 2px solid #00bcd4; /* teal/aqua outline */
+      }
+
+      button {
+        background-color: #ffffff;
+        color: #000;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #03a9f4;
+      }
+
+
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Left Controls (Gradient Colors + Image Upload) -->
+      <div class="controls">
+        <div class="control-group">
+          <h3>Gradient Colors</h3>
+          <div class="gradient-controls" id="gradientControls">
+            <div class="color-stop">
+              <input type="color" class="gradient-color" value="#ff0000" />
+              <input
+                type="range"
+                class="gradient-position"
+                min="0"
+                max="360"
+                value="0"
+              />
+            </div>
+          </div>
+    
+          <button
+            class="add-color-btn btn btn-sm btn-neutral w-full text-white"
+            id="addColorBtn"
+          >
+            Add Color
+          </button>
+        </div>
+
+
+        <div class="control-group bg-base-300 p-4 rounded-md shadow-md">
+            <h3 class="font-semibold text-lg mb-6 text-white">Text Settings</h3>
+            <div class="text-controls">
+              
+              <!-- Text Input -->
+              <div class="form-control w-full mb-6">
+                <label class="label">
+                  <span class="label-text text-white">Text</span>
+                </label>
+                <input
+                  type="text"
+                  id="textInput"
+                  placeholder="Enter text"
+                  value="If it lags or breaks, sorry! I just vibed and coded this. — Bikash"
+                  class="input input-bordered input-sm bg-base-200 text-white w-full"
+                />
+              </div>
+          
+              <!-- Font Family Dropdown -->
+              <div class="form-control w-full mb-6">
+                <label class="label">
+                  <span class="label-text text-white">Font Family</span>
+                </label>
+                <select
+                  id="fontFamily"
+                  class="select select-bordered select-sm bg-base-200 w-full"
+                >
+                <option value="'Onest', sans-serif">Onest</option>
+                <option value="Arial">Arial</option>
+                <option value="'Times New Roman'">Times New Roman</option>
+                <option value="'Courier New'">Courier New</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Verdana">Verdana</option>
+                <option value="'Poppins', sans-serif">Poppins</option>
+                <option value="'DM Serif Display', serif">DM Serif Display</option>
+                <option value="'Bricolage Grotesque', sans-serif">Bricolage Grotesque</option>
+                <option value="'Instrument Serif', serif">Instrument Serif</option>
+                <option value="'Space Mono', monospace">Space Mono</option>
+                <option value="'Ms Madi', cursive">Ms Madi</option>
+                
+                
+                </select>
+              </div>
+          
+              <!-- Font Size & Color -->
+              <div class="flex gap-4 mb-6">
+                <div class="form-control w-1/2">
+                  <label class="label">
+                    <span class="label-text text-white">Font Size</span>
+                  </label>
+                  <input
+                    type="number"
+                    id="fontSize"
+                    value="2"  
+                    min="0"
+                    max="20"
+                    class="input input-bordered input-sm bg-base-200 text-white w-full"
+                  />
+                </div>
+                <div class="form-control w-1/2">
+                  <label class="label">
+                    <span class="label-text text-white">Text Color</span>
+                  </label>
+                  <input
+                    type="color"
+                    id="textColor"
+                    value="#ffffff"
+                    class="w-full h-10 rounded border border-base-300 cursor-pointer"
+                  />
+                </div>
+              </div>
+          
+              <!-- Text Position -->
+              <div class="flex gap-4">
+                <div class="form-control w-1/2">
+                  <label class="label">
+                    <span class="label-text text-white">Position X</span>
+                  </label>
+                  <input
+                    type="number"
+                    id="textX"
+                    value="400"
+                    placeholder="X"
+                    class="input input-bordered input-sm bg-base-200 text-white w-full"
+                  />
+                </div>
+                <div class="form-control w-1/2">
+                  <label class="label">
+                    <span class="label-text text-white">Position Y</span>
+                  </label>
+                  <input
+                    type="number"
+                    id="textY"
+                    value="300"
+                    placeholder="Y"
+                    class="input input-bordered input-sm bg-base-200 text-white w-full"
+                  />
+                </div>
+              </div>
+              
+            </div>
+          </div>
+
+
+
+        <div class="control-group">
+          <h3 class="font-semibold text-lg mb-2">Image Upload</h3>
+          <div class="file-upload mb-2">
+            <input
+              type="file"
+              id="imageUpload"
+              accept="image/*"
+              class="file-input file-input-sm file-input-bordered w-full"
+            />
+          </div>
+         
+        </div>
+      </div>
+
+      <!-- Canvas in the center -->
+      <canvas id="canvas">
+        <p>Your browser does not support the canvas tag.</p>
+      </canvas>
+
+      <!-- Right Controls (Text Settings + Effects) -->
+      <div class="controls">
+        
+          
+          
+
+        <div class="control-group">
+          <h3>Effects</h3>
+          <label for="blur">Blur</label>
+          <!-- <input type="range" id="blur" min="10" max="1000" value="200" step="0.1" /> -->
+          <input
+            type="range"
+            id="blur"
+            min="10"
+            max="1200"
+            value="200"
+            step="0.1"
+            class="range range-xs"
+          />
+
+          <label for="saturation">Saturation</label>
+          <!-- <input type="range" id="saturation" min="0" max="200" value="100" step="1" /> -->
+          <input
+            type="range"
+            id="saturation"
+            min="0"
+            max="200"
+            value="100"
+            step="1"
+            class="range range-xs"
+          />
+
+          <label for="grain">Grain</label>
+          <!-- <input type="range" id="grain" min="0" max="100" value="25" step="1" /> -->
+          <input
+            type="range"
+            id="grain"
+            min="0"
+            max="100"
+            value="25"
+            step="1"
+            class="range range-xs"
+          />
+
+          <label for="intensity">Intensity</label>
+          <!-- <input type="range" id="intensity" min="0" max="200" value="100" step="1" /> -->
+          <input
+            type="range"
+            id="intensity"
+            min="0"
+            max="200"
+            value="100"
+            step="1"
+            class="range range-xs"
+          />
+
+          <label for="opacity">Opacity</label>
+          <!-- <input type="range" id="opacity" min="0" max="100" value="100" step="1" /> -->
+          <input
+            type="range"
+            id="opacity"
+            min="0"
+            max="100"
+            value="100"
+            step="1"
+            class="range range-xs"
+          />
+
+          <label for="brightness">Brightness</label>
+          <!-- <input type="range" id="brightness" min="0" max="200" value="100" step="1" /> -->
+          <input
+            type="range"
+            id="brightness"
+            min="0"
+            max="200"
+            value="100"
+            step="1"
+            class="range range-xs"
+          />
+
+          <label for="contrast">Contrast</label>
+          <!-- <input type="range" id="contrast" min="0" max="200" value="100" step="1" /> -->
+          <input
+            type="range"
+            id="contrast"
+            min="0"
+            max="200"
+            value="100"
+            step="1"
+            class="range range-xs"
+          />
+
+          <label for="glow">Glow</label>
+          <!-- <input type="range" id="glow" min="0" max="50" value="0" step="1" /> -->
+          <input
+            type="range"
+            id="glow"
+            min="0"
+            max="50"
+            value="0"
+            step="1"
+            class="range range-xs"
+          />
+        </div>
+        <button id="downloadBtn" class="btn btn-sm btn-neutral w-full">
+            Download Image
+          </button>
+      </div>
+      
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
